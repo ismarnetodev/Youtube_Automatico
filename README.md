@@ -1,0 +1,1 @@
+# foguinho_automatico
