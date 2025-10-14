@@ -37,7 +37,6 @@ O projeto tem como propósito explorar o uso de **reconhecimento facial aplicado
 
 foguinho_automatico/
 ├── main.py              # Código principal
-├── test_olho.py         # Testes de reconhecimento facial
 ├── requirements.txt     # Dependências do projeto
 └── README.md            # Este arquivo
 
