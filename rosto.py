@@ -1,10 +1,11 @@
-import webbrowser
+import webbrowser as web 
 from time import sleep
 import json
 import cv2
-import pytesseract as tct
-import subprocess
-import os
+import pyautogui as pd
+import numpy as np
+import time
+
 
 class DetectorMovimentoFacialAvancado:
     def __init__(self):
@@ -19,6 +20,10 @@ class DetectorMovimentoFacialAvancado:
         self.comandos_ativos = True
         self.contador_movimentos = 0
         self.ultimo_comando = ""
+        
+        # Controle para detecção de 5 segundos
+        self.tempo_inicio_direita = None
+        self.comando_executado = False
 
     # ------------------------------------------------------------
     # Calcula diferença entre posição do rosto atual e anterior
@@ -49,6 +54,52 @@ class DetectorMovimentoFacialAvancado:
             json.dump(dados, f, indent=4)
         print("Movimentos salvos em movimentos_faciais.json")
 
+    # ---------------------------------------------------------------
+    # Detecta se a cabeça está inclinada para direita por 5 segundos
+    # ---------------------------------------------------------------
+    def detectar_inclinacao_direita(self, movimento, dx):
+        """
+        Detecta se a cabeça está inclinada para direita por 5 segundos consecutivos
+        e executa o comando do YouTube Shorts
+        """
+        if not self.comandos_ativos:
+            self.tempo_inicio_direita = None
+            return
+            
+        # Se detectou movimento para direita
+        if "Direita" in movimento and dx > 10:
+            # Inicia o temporizador se não estava contando
+            if self.tempo_inicio_direita is None:
+                self.tempo_inicio_direita = time.time()
+                self.comando_executado = False
+                print("Iniciando contagem para YouTube Shorts...")
+            
+            # Calcula quanto tempo já passou
+            tempo_decorrido = time.time() - self.tempo_inicio_direita
+            
+            # Se passaram 5 segundos e o comando ainda não foi executado
+            if tempo_decorrido >= 5 and not self.comando_executado:
+                print("5 segundos detectados! Executando comando YouTube Shorts...")
+                
+                # Abre o YouTube Shorts
+                web.open('https://www.youtube.com/shorts')
+                sleep(3)  # Espera a página carregar
+                
+                # Faz o scroll
+                pd.scroll(-100)
+                print("YouTube Shorts aberto e scroll realizado!")
+                
+                # Marca que o comando foi executado
+                self.comando_executado = True
+                
+            return tempo_decorrido
+            
+        else:
+            # Reseta o temporizador se não está mais inclinado para direita
+            self.tempo_inicio_direita = None
+            self.comando_executado = False
+            return 0
+
     # ------------------------------------------------------------
     # Função principal - captura da câmera e detecção de movimentos
     # ------------------------------------------------------------
@@ -65,7 +116,7 @@ class DetectorMovimentoFacialAvancado:
             return
 
         print("=== SISTEMA DE DETECÇÃO FACIAL ATIVADO ===")
-        print("Movimentos: Esquerda | Direita | Cima | Baixo | Frente | Trás")
+        print("INCLINE A CABEÇA PARA DIREITA POR 5 SEGUNDOS PARA ABRIR YOUTUBE SHORTS")
         print("Teclas:")
         print("q - sair | s - salvar | c - ativar/desativar detecção | r - resetar contador")
         
@@ -74,6 +125,9 @@ class DetectorMovimentoFacialAvancado:
             if not ret:
                 print("Erro ao capturar frame. Verifique a câmera.")
                 break
+            
+            # 🔄🔁🔄 INVERTE A CÂMERA AQUI 🔄🔁🔄
+            frame = cv2.flip(frame, 1)  # 1 = espelhar horizontalmente
             
             # Converte para tons de cinza (aumenta a performance)
             cinza = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -119,9 +173,19 @@ class DetectorMovimentoFacialAvancado:
 
                         self.ultimo_comando = movimento_limpo
 
+                        # Detecta inclinação prolongada para direita
+                        tempo_decorrido = self.detectar_inclinacao_direita(movimento_limpo, dx)
+
                         # Mostra o movimento detectado na tela
                         cv2.putText(frame, f"Movimento: {movimento_limpo}", (10, 30),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, cor, 2)
+                        
+                        # Mostra contagem regressiva se estiver contando
+                        if self.tempo_inicio_direita is not None and tempo_decorrido > 0:
+                            tempo_restante = max(0, 5 - tempo_decorrido)
+                            cv2.putText(frame, f"YouTube Shorts em: {tempo_restante:.1f}s", 
+                                       (10, frame.shape[0] - 50), cv2.FONT_HERSHEY_SIMPLEX, 
+                                       0.8, (0, 255, 255), 2)
 
                         # Desenha setas visuais indicando direção
                         centro_x, centro_y = x + w//2, y + h//2
@@ -131,6 +195,9 @@ class DetectorMovimentoFacialAvancado:
                             cv2.arrowedLine(frame, (centro_x, centro_y), (centro_x - 50, centro_y), arrow_color, 3)
                         if "Direita" in movimento:
                             cv2.arrowedLine(frame, (centro_x, centro_y), (centro_x + 50, centro_y), arrow_color, 3)
+                            # Destaca a seta direita quando contando tempo
+                            if self.tempo_inicio_direita is not None:
+                                cv2.arrowedLine(frame, (centro_x, centro_y), (centro_x + 70, centro_y), (0, 0, 255), 5)
                         if "Cima" in movimento:
                             cv2.arrowedLine(frame, (centro_x, centro_y), (centro_x, centro_y - 50), arrow_color, 3)
                         if "Baixo" in movimento:
@@ -140,6 +207,8 @@ class DetectorMovimentoFacialAvancado:
                 self.face_anterior = faces[0]
             else:
                 self.face_anterior = None
+                self.tempo_inicio_direita = None
+                self.comando_executado = False
             
             # --------------------------------------------------------
             # Exibição de status e informações na tela
@@ -164,18 +233,13 @@ class DetectorMovimentoFacialAvancado:
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
             y_pos += 25
             
-            # Últimos movimentos
-            cv2.putText(frame, "Últimos movimentos:", (10, y_pos),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            y_pos += 20
-            
-            for i, mov in enumerate(self.movimentos[-5:]):
-                cv2.putText(frame, f"{i + 1}. {mov}", (10, y_pos),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, (200, 200, 200), 1)
-                y_pos += 15
+            # Instrução principal
+            cv2.putText(frame, "INCLINE DIREITA 5s -> YOUTUBE SHORTS", 
+                       (frame.shape[1] - 350, 30), cv2.FONT_HERSHEY_SIMPLEX, 
+                       0.6, (0, 255, 255), 2)
             
             # Mostra o vídeo com as marcações
-            cv2.imshow('Detecção Facial Avançada', frame)
+            cv2.imshow('Detecção Facial - YouTube Shorts', frame)
 
             # Controles via teclado
             key = cv2.waitKey(1) & 0xFF
@@ -185,10 +249,13 @@ class DetectorMovimentoFacialAvancado:
                 self.salvar_movimentos()
             elif key == ord('c'): # ativar/desativar detecção
                 self.comandos_ativos = not self.comandos_ativos
+                self.tempo_inicio_direita = None
                 print(f"Detecção {'ativada' if self.comandos_ativos else 'desativada'}!")
             elif key == ord('r'): # resetar contador
                 self.contador_movimentos = 0
                 self.movimentos = []
+                self.tempo_inicio_direita = None
+                self.comando_executado = False
                 print("Contadores resetados!")
                 
         # Libera recursos
