@@ -1,6 +1,6 @@
 # 🔥 Produtividade Maxima
 
-A **Produtividade Maxima** é um projeto em desenvolvimento que utiliza **visão computacional** para **reconhecer movimentos faciais** e realizar **ações automatizadas no computador**.  
+O **Produtividade Maxima** é um projeto em desenvolvimento que utiliza **visão computacional** para **reconhecer movimentos faciais** e realizar **ações automatizadas no computador**.  
 Atualmente, o sistema identifica quando o usuário **baixa o rosto por cinco segundos**, e em resposta, executa um comando **Alt + Tab** para alternar de janela, abrir o **YouTube Shorts** e **rolar automaticamente os vídeos**.
 
 ---
@@ -33,3 +33,56 @@ O projeto tem como propósito explorar o uso de **reconhecimento facial aplicado
 
 ## 📦 Estrutura do projeto
 
+```
+
+foguinho_automatico/
+├── main.py              # Código principal
+├── test_olho.py         # Testes de reconhecimento facial
+├── requirements.txt     # Dependências do projeto
+└── README.md            # Este arquivo
+
+````
+
+---
+
+## 🛠️ Como executar
+
+1. **Instale as dependências:**
+   ```bash
+   pip install -r requirements.txt
+````
+
+2. **Execute o projeto:**
+
+   ```bash
+   python main.py
+   ```
+
+3. Certifique-se de estar em um ambiente com **boa iluminação** para melhor detecção facial.
+
+---
+
+## 🧩 Próximos passos
+
+* Adicionar mais gestos e ações automatizadas.
+* Criar uma interface gráfica para controle.
+* Permitir personalização de comandos pelo usuário.
+* Otimizar o tempo de resposta e precisão do reconhecimento facial.
+
+---
+
+## 📜 Licença
+
+Este projeto está sob a **licença MIT** — uso livre para estudo, modificação e distribuição, com os devidos créditos.
+
+---
+
+**Autor:** [Ismar Neto](https://github.com/ismarnetodev)
+💡 *Projeto pessoal em desenvolvimento com foco em automação e visão computacional.*
+
+```
+
+---
+
+Quer que eu gere também o `requirements.txt` básico com as bibliotecas que seu projeto usa (ex: OpenCV, PyAutoGUI, etc.)? Assim você já deixa o repositório completo.
+```
