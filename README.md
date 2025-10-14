@@ -1,6 +1,6 @@
-# 🔥 Foguinho Automático
+# 🔥 Produtividade Maxima
 
-O **Foguinho Automático** é um projeto em desenvolvimento que utiliza **visão computacional** para **reconhecer movimentos faciais** e realizar **ações automatizadas no computador**.  
+A **Produtividade Maxima** é um projeto em desenvolvimento que utiliza **visão computacional** para **reconhecer movimentos faciais** e realizar **ações automatizadas no computador**.  
 Atualmente, o sistema identifica quando o usuário **baixa o rosto por cinco segundos**, e em resposta, executa um comando **Alt + Tab** para alternar de janela, abrir o **YouTube Shorts** e **rolar automaticamente os vídeos**.
 
 ---
