@@ -103,7 +103,7 @@ class DetectorGestosMaosAvancado:
         """
         print("🎬 Iniciando scroll automático no YouTube Shorts...")
         
-        # 🆕 Move o mouse para o centro antes de começar o scroll
+        # Move o mouse para o centro antes de começar o scroll
         self.mover_mouse_centro()
         
         self.scroll_ativo = True
@@ -140,7 +140,7 @@ class DetectorGestosMaosAvancado:
         if gesto == "DEDO_INDICADOR" and not self.em_scroll:
             print("📗 Dedo indicador detectado! Abrindo YouTube Shorts...")
             
-            # 🆕 Move o mouse para o centro antes de abrir o YouTube
+            # Move o mouse para o centro antes de abrir o YouTube
             self.mover_mouse_centro()
             
             # Abre o YouTube Shorts
@@ -165,7 +165,7 @@ class DetectorGestosMaosAvancado:
                 self.scroll_ativo = False
                 self.em_scroll = False
                 
-                # 🆕 Move o mouse para o centro ao parar o scroll
+                # Move o mouse para o centro ao parar o scroll
                 self.mover_mouse_centro()
                 
                 pd.hotkey('ctrl', 'w')
@@ -213,7 +213,7 @@ class DetectorGestosMaosAvancado:
         print("  q - Sair | s - Salvar | c - Ativar/Desativar | r - Reset")
         print("  m - Mover mouse para o centro (manual)")
         
-        # 🆕 Move o mouse para o centro ao iniciar o programa
+        # Move o mouse para o centro ao iniciar o programa
         self.mover_mouse_centro()
         
         while True:
@@ -336,7 +336,7 @@ class DetectorGestosMaosAvancado:
                 self.scroll_ativo = False
                 self.em_scroll = False
                 print("Sistema resetado!")
-            elif key == ord('m'): # 🆕 Mover mouse para centro (manual)
+            elif key == ord('m'): # Mover mouse para centro (manual)
                 self.mover_mouse_centro()
                 
         # Libera recursos
